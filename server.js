@@ -1,6 +1,6 @@
 var array={
     Group: 1,
-    name: israel,
+    name: 'israel',
     msg: 'home'
 };
 
@@ -14,7 +14,7 @@ var http=require('http'),
 		//res.end(req.url);
 		var t=req.url;
 		if(t.indexOf('addUserToGroup')>-1){
-			res.end('add user');   
+			res.end('add user');
 		}
 		else if(t.indexOf('addNewMsg')>-1){
 			res.end('new msg');
@@ -25,6 +25,7 @@ var http=require('http'),
 		else{
 			res.end('error');
     }
+  }
 
 http.createServer(server).listen(PORT);
 console.log('Server started.');
