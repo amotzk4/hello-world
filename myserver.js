@@ -1,39 +1,60 @@
-var group1=[];
-var msg1=[];
+var group1={
+users: [],
+msgs: []
+};
+
 var express = require('express');
 var app = express();
-var date = new Date();
+
 
 app.get('/myServer',function(request, response) {
-	response.end(request.url);
-	var t=req.url;
+	
+	var t=request.url;
         
-	if(t.indexOf('addUserToGroup')>-1)
+	if(t.indexOf('addUserToGroup')>-1){
 	var group = request.query.group;
 	var name=request.query.name;
 	var tel=request.query.tel;
-	var obj = { 'group': group, 'name': name, 'tel': tel};	
-	group1.push(obj);
+	var id=request.query.id;
+	var obj = {'name': name, 'tel': tel};
+	response.end(JSON.stringify(obj));	
+	group1.users.push(obj);
 	console.log(group1);
+	response.end(JSON.stringify(group1));
 	}
 		
 	else if(t.indexOf('addNewMsg')>-1){
+	var group = request.query.group;	
 	var id=request.query.id;
 	var msg=request.query.msg;
-	var time=request.query.msg;
-	var obj = { 'group': id, 'msg': msg, 'time': time};
-	msg1.push(obj);
-	console.log(addmsg);
+	var time=request.query.time;
+	var obj = {'msg': msg, 'time': time};
+	group1.msgs.push(obj);
+	console.log(group1);
 	}
 
 	else if(t.indexOf('getCurrentGruopMsg')>-1){
 	var id=request.query.id;
-	var current_hour = date.getHours();			
-	res.end(JSON.stringify(array));
+	var usermsg = Object.keys(group1.msgs);
+	usermsg.forEach(function(parameter) {
+  	var items = Object.keys(group1.msgs[parameter]);
+  	items.forEach(function(item) {
+    	var value = group1.msgs[parameter][item];
+	if(item=='time'){
+	var moment = require('moment');
+	var time=moment().format('hh:mm a');
+	if(value>time){
+    	console.log(parameter+' '+item+' = '+value);
+	response.end(JSON.stringify(item+'= '+value));	
+	}
+	}
+  	});
+	});
+	
 	}
 	
 	else{
-	res.end('error');
+	response.end('error');
     	}
 
 
