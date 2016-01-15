@@ -29,6 +29,7 @@ app.get('/addNewMsg',function(request, response) {
 	var obj = {'msg': msg, 'time': time};
 	group1.msgs.push(obj);
 	console.log(group1);
+	response.end(JSON.stringify(group1));
 });
 
 app.get('/getCurrentGruopMsg',function(request, response) {
