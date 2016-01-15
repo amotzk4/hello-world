@@ -1,6 +1,7 @@
+
 var express = require('express');
 var moment = require('moment');
-
+var DB={};
 var group1={
 	users: [],
 	msgs: []
@@ -9,16 +10,28 @@ var group1={
 
 var app = express();
 
+app.get('/addNewGroup',function(request, response) {
+	var name=request.query.name;
+	var id=request.query.id;
+	DB[id]={};
+	DB[id]["users"] = []
+	DB[id]["activeRides"] = []
+	response.end(JSON.stringify('add new group: '+name+' '+id));
+	console.log('add new group: '+name+' '+id);
+	console.log(JSON.stringify(DB,null,2))
+});
+
 app.get('/addUserToGroup',function(request, response) {
 	var group = request.query.group;
 	var name=request.query.name;
 	var tel=request.query.tel;
 	var id=request.query.id;
-	var obj = {'name': name, 'tel': tel};
-	response.end(JSON.stringify(obj));	
-	group1.users.push(obj);
-	console.log(group1);
-	response.end(JSON.stringify(group1));
+	var obj = {'name': name, 'tel': tel, 'id': id};
+	console.log(obj);
+	DB[group]['users'].push(obj);
+	console.log(JSON.stringify(DB,null,2))
+	response.end(JSON.stringify('add user to group: '+obj));	
+	console.log('add user to group: '+obj);
 });
 
 app.get('/addNewMsg',function(request, response) {
@@ -27,36 +40,24 @@ app.get('/addNewMsg',function(request, response) {
 	var msg=request.query.msg;
 	var time=request.query.time;
 	var obj = {'msg': msg, 'time': time};
-	group1.msgs.push(obj);
-	console.log(group1);
-	response.end(JSON.stringify(group1));
+	DB[group]['activeRides'].push(obj);
+	response.end(JSON.stringify('add new msg: '+obj));	
+	console.log('add new msg: '+obj);
 });
 
 app.get('/getCurrentGruopMsg',function(request, response) {
+	var obj=JSON.stringify(group1.msgs);
+	console.log('obj: '+obj);
 	var id=request.query.id;
-	var usermsg = Object.keys(group1.msgs);
-	usermsg.forEach(function(parameter) {
-	  	var items = Object.keys(group1.msgs[parameter]);
-	  	items.forEach(function(item) {
-	    	var value = group1.msgs[parameter][item];
-			if(item=='time'){
-				var time=moment().format('hh:mm a');
-				if(value>time){
-			    	console.log(parameter+' '+item+' = '+value);
-					response.end(JSON.stringify(item+'= '+value));	
-				}
-			}
-	  	});
-	});
+	
+	//for (var i = 0; i < obj.length; i++) {
+    	//console.log(obj[i]);
+	
+	
+	response.end(JSON.stringify(DB[id]['activeRides']));
 });
 
 
 
 
 app.listen(3000);
-
-
-
-
-
-
