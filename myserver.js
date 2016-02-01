@@ -7,6 +7,7 @@ var app = express();
 
 app.get('/addNewGroup',function(request, response) {
 	var name=request.query.name;
+	//[Yotam] all the ID should be assgin by the server not by the client.
 	var group_id=request.query.group_id;
 	DB[group_id]={};
 	DB[group_id]["users"] = []
@@ -25,9 +26,11 @@ app.get('/addUserToGroup',function(request, response) {
 	for(var i=0; i<Object.keys(DB).length&&x==false; i++){
 		if(group_id==Object.keys(DB)[i]){
 			x=true;
+			//[YOTAM]you can add break here.
 		}
 	}
-
+	//[YOTAM] but you can just check for 
+	//[YOTAM] if(!DB[group_id])
 	if(x==true){
 	var obj = {'group_id': group_id, 'name': name, 'tel': tel, 'user_id': user_id};	
 	DB[group_id]['users'].push(obj);
