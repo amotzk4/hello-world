@@ -1,46 +1,38 @@
-
 var express = require('express');
 var moment = require('moment');
 var DB={};
 
 var app = express();
+var id_group=0;
+var id_user=0;
 
 app.get('/addNewGroup',function(request, response) {
 	var name=request.query.name;
-	//[Yotam] all the ID should be assgin by the server not by the client.
-	var group_id=request.query.group_id;
-	DB[group_id]={};
-	DB[group_id]["users"] = []
-	DB[group_id]["activeRides"] = []	
-	response.end('add new group: '+name+' '+group_id);
-	console.log(JSON.stringify(DB,null,2))
+	DB[id_group]={};
+	DB[id_group]["users"] = []
+	DB[id_group]["activeRides"] = []	
+	response.end('add new group: '+name+' '+id_group);
+	console.log(JSON.stringify(DB,null,2));
+	id_group++;
 });
 
 app.get('/addUserToGroup',function(request, response) {
 	var group_id = request.query.group_id;
 	var name=request.query.name;
 	var tel=request.query.tel;
-	var user_id=request.query.user_id;
-	
-	var x=false;
-	for(var i=0; i<Object.keys(DB).length&&x==false; i++){
-		if(group_id==Object.keys(DB)[i]){
-			x=true;
-			//[YOTAM]you can add break here.
-		}
+	var user_id=id_user;
+	console.log(group_id);
+	if(!DB[group_id]){
+	response.end('Group does not exist');
+	console.log(JSON.stringify('Group does not exist'));
 	}
-	//[YOTAM] but you can just check for 
-	//[YOTAM] if(!DB[group_id])
-	if(x==true){
+	
+	else{
 	var obj = {'group_id': group_id, 'name': name, 'tel': tel, 'user_id': user_id};	
 	DB[group_id]['users'].push(obj);
 	console.log(JSON.stringify(DB,null,2))
 	response.end('add user to group: '+obj);
-	}
-
-	else{
-	response.end('Group does not exist');
-	console.log(JSON.stringify('Group does not exist'))
+	id_user++;
 	}
 });
 
@@ -49,53 +41,32 @@ app.get('/addNewMsg',function(request, response) {
 	var user_id=request.query.user_id;
 	var msg=request.query.msg;
 	var time=request.query.time;
-	
-	var x=false;
-	for(var i=0; i<Object.keys(DB).length&&x==false; i++){
-		if(group_id==Object.keys(DB)[i]){
-			x=true;
-		}
+	if(!DB[group_id]){
+	response.end('Group does not exist');
+	console.log(JSON.stringify('Group does not exist'));
 	}
 
-	if(x==true){	
-	
-		var y=false;
-		for(var i=0; i<Object.keys(DB[group_id]).length&&y==false; i++){
-			if(user_id==Object.keys(DB[group_id])[i]){
-				y=true;		
-			}
-		}	
-	
-		if(y==false){
-		response.end('user does not exist');
-		console.log(JSON.stringify('user does not exist'))
-		}
-		else{
-			var obj = {'group_id': group_id, 'user_id': id,'msg': msg, 'time': time};
-			DB[group_id]["activeRides"].push(obj);
-			response.end('add new msg: '+obj);	
-			console.log(JSON.stringify(DB,null,2))
-		}
-	}
-	else{
-	response.end('Group does not exist');
-	console.log(JSON.stringify('Group does not exist'))
+	else if(!Object.keys(DB[group_id])[user_id]){
+	response.end('user does not exist');
+	console.log(JSON.stringify('user does not exist'));
 	}
 	
+	else{	
+	var obj = {'group_id': group_id, 'user_id': user_id,'msg': msg, 'time': time};
+	DB[group_id]["activeRides"].push(obj);
+	response.end('add new msg: '+obj);	
+	console.log(JSON.stringify(DB,null,2))
+	}
 });
 
 app.get('/getCurrentGruopMsg',function(request, response) {
 	var group_id=request.query.group_id;
-
-	var x=false;
-	for(var i=0; i<Object.keys(DB).length&&x==false; i++){
-		if(group_id==Object.keys(DB)[i]){
-			x=true;
-		}
+	if(!DB[group_id]){
+	response.end('Group does not exist');
+	console.log(JSON.stringify('Group does not exist'));
 	}
-
-	if(x==true){
-
+	
+	else{
 	var time=moment().format('hh:mm a');
 	var current=[];
 	var usermsg = Object.keys(DB[group_id]['activeRides']);
@@ -104,7 +75,7 @@ app.get('/getCurrentGruopMsg',function(request, response) {
 		var items = Object.keys(DB[group_id]['activeRides'][parameter]);
 	  	items.forEach(function(item) {
 	    	var value = DB[group_id]['activeRides'][parameter][item];
-		temp+=item+' '+value+'';
+		temp+=item+' '+value+' ';
 			if(item=='time'){
 				var time=moment().format('hh:mm a');
 				console.log(time);
@@ -115,16 +86,14 @@ app.get('/getCurrentGruopMsg',function(request, response) {
 			}
 	  	});
 	});
-	DB[id]['activeRides']=current;
+	DB[group_id]['activeRides']=current;
 	current=[];
 	console.log(JSON.stringify(DB[group_id]['activeRides']));
 	response.end(JSON.stringify(DB[group_id]['activeRides']));
 	}
+	
 
-	else{
-	response.end('Group does not exist');
-	console.log(JSON.stringify('Group does not exist'))
-	}
+	
 });
 
 app.listen(3000);
