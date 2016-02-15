@@ -46,7 +46,7 @@ app.get('/addNewMsg',function(request, response) {
 	console.log(JSON.stringify('Group does not exist'));
 	}
 
-	else if(!Object.keys(DB[group_id])[user_id]){
+	else if(!DB[group_id]['users'][user_id]){
 	response.end('user does not exist');
 	console.log(JSON.stringify('user does not exist'));
 	}
